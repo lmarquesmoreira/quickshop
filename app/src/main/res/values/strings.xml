@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">QuickShop</string>
+    <string name="title_home">Nova Compra</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notificações</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_main2">MainActivity2</string>
+</resources>
