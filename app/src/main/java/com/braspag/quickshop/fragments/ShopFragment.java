@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.braspag.quickshop.BuyActivity;
-import com.braspag.quickshop.PointsOverlayView;
 import com.braspag.quickshop.R;
 import com.dlazaro66.qrcodereaderview.QRCodeReaderView;
 
@@ -28,7 +27,6 @@ public class ShopFragment extends Fragment implements ActivityCompat.OnRequestPe
     private static final int MY_PERMISSION_REQUEST_CAMERA = 0;
     private ViewGroup mainLayout;
     private QRCodeReaderView qrCodeReaderView;
-    private PointsOverlayView pointsOverlayView;
 
     public static Fragment newInstance() {
         Fragment frag = new ShopFragment();
@@ -94,7 +92,6 @@ public class ShopFragment extends Fragment implements ActivityCompat.OnRequestPe
 
     @Override
     public void onQRCodeRead(String text, PointF[] points) {
-        pointsOverlayView.setPoints(points);
         callBuyActivity(text);
     }
 
@@ -122,8 +119,6 @@ public class ShopFragment extends Fragment implements ActivityCompat.OnRequestPe
         View content = LayoutInflater.from(getActivity()).inflate(R.layout.content_decoder, mainLayout, true);
 
         qrCodeReaderView = content.findViewById(R.id.qrdecoderview);
-        pointsOverlayView = content.findViewById(R.id.points_overlay_view);
-
         qrCodeReaderView.setAutofocusInterval(2000L);
         qrCodeReaderView.setOnQRCodeReadListener(this);
         qrCodeReaderView.setBackCamera();
