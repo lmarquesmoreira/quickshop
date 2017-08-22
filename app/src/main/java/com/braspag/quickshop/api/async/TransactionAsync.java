@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.braspag.quickshop.api.RestGenerator;
 import com.braspag.quickshop.api.interfaces.IOffer;
+import com.braspag.quickshop.api.interfaces.ITransaction;
+import com.braspag.quickshop.api.models.TransactionModel;
 import com.braspag.quickshop.models.Cart;
 
 import retrofit2.Call;
@@ -12,42 +14,34 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
- * Created by lmmoreira on 8/18/2017.
+ * Created by lmmoreira on 8/22/2017.
  */
 
-public class OfferAsync extends AsyncTask<Object, Object, Void> {
-
+public class TransactionAsync extends AsyncTask<TransactionModel, Object, Void> {
     private IResultAsync resultAsyncCallback;
-    private int cartId;
-    private String authorizationHeader;
 
-    public OfferAsync(IResultAsync resultAsyncCallback, String authorizationHeader, int cartId) {
+    public TransactionAsync(IResultAsync resultAsyncCallback) {
         this.resultAsyncCallback = resultAsyncCallback;
-        this.cartId = cartId;
-        this.authorizationHeader = "Bearer " + authorizationHeader;
     }
 
     @Override
-    protected Void doInBackground(Object... objects) {
-        RestGenerator rest = new RestGenerator(RestGenerator.API_BASE_URL);
-        Call<Cart> request = rest.createService(IOffer.class)
-                .GetOffer(this.authorizationHeader, this.cartId);
+    protected Void doInBackground(TransactionModel... transactionModels) {
+        RestGenerator rest = new RestGenerator(RestGenerator.API_SPLIT_BASE_URL);
+        Call<String> request = rest.createService(ITransaction.class).SendTransaction(transactionModels[0]);
 
-        request.enqueue(new Callback<Cart>() {
+        request.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<Cart> call, Response<Cart> response) {
+            public void onResponse(Call<String> call, Response<String> response) {
                 if (response.isSuccessful()) {
                     resultAsyncCallback.send(new ResultAsyncModel(response.body()));
                 }
             }
 
             @Override
-            public void onFailure(Call<Cart> call, Throwable t) {
+            public void onFailure(Call<String> call, Throwable t) {
                 t.printStackTrace();
                 Log.d(RestGenerator.LogAPP, t.getLocalizedMessage());
-
                 resultAsyncCallback.send(new ResultAsyncModel<>());
-
             }
         });
         return null;

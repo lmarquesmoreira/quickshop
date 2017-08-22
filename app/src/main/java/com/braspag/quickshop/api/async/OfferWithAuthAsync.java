@@ -30,7 +30,7 @@ public class OfferWithAuthAsync extends AsyncTask<Void, Void, Cart> {
 
     @Override
     protected Cart doInBackground(Void... voids) {
-        RestGenerator rest = new RestGenerator();
+        RestGenerator rest = new RestGenerator(RestGenerator.API_BASE_URL);
 
         Call<OAuthModel> requestAuthorization = rest.createService(IOAuth.class)
                 .getAuthorizationHeader(RestGenerator.ClientId,

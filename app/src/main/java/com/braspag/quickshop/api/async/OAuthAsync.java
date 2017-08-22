@@ -24,7 +24,7 @@ public class OAuthAsync extends AsyncTask<Void, Void, OAuthModel> {
 
     @Override
     protected OAuthModel doInBackground(Void... voids) {
-        RestGenerator rest = new RestGenerator();
+        RestGenerator rest = new RestGenerator(RestGenerator.API_BASE_URL);
         Call<OAuthModel> request = rest.createService(IOAuth.class)
                 .getAuthorizationHeader(RestGenerator.ClientId,
                         RestGenerator.ClientSecret,

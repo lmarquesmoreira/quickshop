@@ -18,18 +18,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RestGenerator {
     public final static String LogAPP = "CIELO_SHOP";
 
-    public final static String ClientId ="8EC30900-65CD-4D4F-AD95-B724E0DEE5B1";
+    public final static String ClientId = "8EC30900-65CD-4D4F-AD95-B724E0DEE5B1";
     public final static String ClientSecret = "Jz9yHFCF-eAP1-fwXKKpTGcUvpC5V7opXXfm0dxQ0kg";
     public final static String GrantType = "client_credentials";
 
-    private final String API_BASE_URL = "https://api.brasp.ag/";
+    public final static String API_BASE_URL = "https://api.brasp.ag/";
+    public final static String API_SPLIT_BASE_URL = "http://splitmock.azurewebsites.net/";
     private static OkHttpClient.Builder httpClient;
     private static Retrofit.Builder builder;
 
-    public RestGenerator() {
+    public RestGenerator(String apiUrl) {
         httpClient = new OkHttpClient.Builder();
         builder = new Retrofit.Builder()
-                .baseUrl(API_BASE_URL)
+                .baseUrl(apiUrl)
                 .addConverterFactory(GsonConverterFactory.create());
     }
 

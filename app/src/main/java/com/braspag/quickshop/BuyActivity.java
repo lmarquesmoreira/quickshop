@@ -17,6 +17,9 @@ import com.braspag.quickshop.api.async.IResultAsync;
 import com.braspag.quickshop.api.async.OAuthAsync;
 import com.braspag.quickshop.api.async.OfferAsync;
 import com.braspag.quickshop.api.async.ResultAsyncModel;
+import com.braspag.quickshop.api.async.TransactionAsync;
+import com.braspag.quickshop.api.models.Seller;
+import com.braspag.quickshop.api.models.TransactionModel;
 import com.braspag.quickshop.models.Cart;
 import com.braspag.quickshop.models.CartItem;
 import com.braspag.quickshop.models.OAuthModel;
@@ -24,6 +27,7 @@ import com.braspag.quickshop.models.OAuthModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -71,10 +75,10 @@ public class BuyActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String message = intent.getStringExtra("OFFER_URL");
-
+        int offerId = getOfferId(message);
         initComponents();
         initOrderManager();
-        getAuthToken();
+        getAuthToken(offerId);
     }
 
     private void initComponents() {
@@ -105,20 +109,20 @@ public class BuyActivity extends AppCompatActivity {
         return amount / 100;
     }
 
-    private void getAuthToken() {
+    private void getAuthToken(final int offerId) {
         OAuthAsync request = new OAuthAsync(new IResultAsync<OAuthModel>() {
             @Override
             public void send(ResultAsyncModel<OAuthModel> result) {
-                getOffer("", result.getModel());
+                getOffer(offerId, result.getModel());
             }
         });
         request.execute();
     }
 
-    private void getOffer(String offerUrl, OAuthModel model) {
+    private void getOffer(int offerId, OAuthModel model) {
         new OfferAsync(cartResultCallback,
                 model.getAccessToken(),
-                50)
+                offerId)
                 .execute();
     }
 
@@ -163,7 +167,34 @@ public class BuyActivity extends AppCompatActivity {
     }
 
     public void onSuccessCaptured(final Context context) {
+        TransactionAsync transactionAsync = new TransactionAsync(new IResultAsync() {
+            @Override
+            public void send(ResultAsyncModel result) {
+                Toast.makeText(context, "Transação salva com sucesso", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        TransactionModel model = new TransactionModel();
+        model.setAmount(currentOrder.getPaidAmount());
+        List<Seller> sellers = new ArrayList<Seller>();
+        sellers.add(new Seller(1));
+        sellers.add(new Seller(2));
+        model.setSellers(sellers);
+        model.setOrder(currentOrder);
+
+        transactionAsync.execute(model);
+
         Toast.makeText(context, "Pagamento realizado com sucesso", Toast.LENGTH_LONG).show();
         finish();
+    }
+
+    private int getOfferId(String message){
+        String[] splited = message.split("/");
+        try{
+            return Integer.parseInt(splited[splited.length - 1]);
+        }catch (Exception ex){
+
+        }
+        return -1;
     }
 }
