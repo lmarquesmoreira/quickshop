@@ -5,6 +5,6 @@ package com.braspag.quickshop;
  */
 
 public final class Constants {
-    public static final String LioClientId = "pLAZpOtC3B8j";
-    public static final String LioClientSecret = "yVssH9UZD0w7";
+    public static final String LioClientId = "IySSf8XLhGqv";
+    public static final String LioClientSecret = "ZGjh8KYWND68";
 }

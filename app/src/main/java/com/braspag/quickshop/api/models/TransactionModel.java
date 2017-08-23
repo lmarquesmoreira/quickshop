@@ -12,6 +12,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.Parcelable.Creator;
 
+import com.braspag.quickshop.models.Cart;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -27,6 +28,11 @@ public class TransactionModel implements Serializable, Parcelable {
     @SerializedName("order")
     @Expose
     private cielo.orders.domain.Order order;
+
+    @SerializedName("offer")
+    @Expose
+    private Cart offer;
+
     public final static Parcelable.Creator<TransactionModel> CREATOR = new Creator<TransactionModel>() {
 
 
@@ -38,6 +44,7 @@ public class TransactionModel implements Serializable, Parcelable {
             instance.amount = ((long) in.readValue((long.class.getClassLoader())));
             in.readList(instance.sellers, (Seller.class.getClassLoader()));
             instance.order = ((cielo.orders.domain.Order) in.readValue((cielo.orders.domain.Order.class.getClassLoader())));
+            instance.offer = ((Cart) in.readValue(Cart.class.getClassLoader()));
             return instance;
         }
 
@@ -62,11 +69,12 @@ public class TransactionModel implements Serializable, Parcelable {
      * @param amount
      * @param order
      */
-    public TransactionModel(long amount, List<Seller> sellers, cielo.orders.domain.Order order) {
+    public TransactionModel(long amount, List<Seller> sellers, cielo.orders.domain.Order order, Cart offer) {
         super();
         this.amount = amount;
         this.sellers = sellers;
         this.order = order;
+        this.offer = offer;
     }
 
     public long getAmount() {
@@ -108,10 +116,24 @@ public class TransactionModel implements Serializable, Parcelable {
         return this;
     }
 
+    public Cart getOffer() {
+        return offer;
+    }
+
+    public void setOffer(Cart offer) {
+        this.offer = offer;
+    }
+
+    public TransactionModel withOffer(Cart offer) {
+        this.offer = offer;
+        return this;
+    }
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeValue(amount);
         dest.writeList(sellers);
         dest.writeValue(order);
+        dest.writeValue(offer);
     }
 
     public int describeContents() {

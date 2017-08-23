@@ -74,12 +74,12 @@ public class MainActivity extends AppCompatActivity {
             case R.id.navigation_home:
                 frag = ShopFragment.newInstance();
                 break;
-            case R.id.navigation_dashboard:
-                frag = DashboardFragment.newInstance();
-                break;
-            case R.id.navigation_notifications:
-                frag = NotificationsFragment.newInstance();
-                break;
+//            case R.id.navigation_dashboard:
+//                frag = DashboardFragment.newInstance();
+//                break;
+//            case R.id.navigation_notifications:
+//                frag = NotificationsFragment.newInstance();
+//                break;
         }
 
         // update selected item

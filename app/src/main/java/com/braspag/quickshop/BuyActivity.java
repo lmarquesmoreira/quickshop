@@ -3,12 +3,15 @@ package com.braspag.quickshop;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,12 +44,14 @@ public class BuyActivity extends AppCompatActivity {
     private static String TAG = "PAYMENT_LISTENER";
     private OrderManager orderManager;
     private cielo.orders.domain.Order currentOrder;
-    private Cart currentModel;
+    private Cart currentOffer;
     private TextView offerTitle;
     private TextView offerAmount;
     private RecyclerView offer_list_recycleView;
     private OfferItemListAdapter listAdapter;
     private Button btn_pay;
+    private LinearLayout container_progressBar;
+    private ScrollView container_rest;
 
     private final IResultAsync<Cart> cartResultCallback = new IResultAsync<Cart>() {
         @Override
@@ -56,15 +61,17 @@ public class BuyActivity extends AppCompatActivity {
             String price = NumberFormat
                     .getCurrencyInstance(new Locale("pt", "BR"))
                     .format((calculateAmount(model.getCartItems())));
-            offerAmount.setText("R$: " + price);
+            offerAmount.setText(price);
 
             offer_list_recycleView.setLayoutManager(new
                     StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
             listAdapter = new OfferItemListAdapter(model.getCartItems());
             offer_list_recycleView.setAdapter(listAdapter);
 
-            currentModel = model;
+            currentOffer = model;
             btn_pay.setEnabled(true);
+
+            setVisibility(true);
         }
     };
 
@@ -79,6 +86,7 @@ public class BuyActivity extends AppCompatActivity {
         initComponents();
         initOrderManager();
         getAuthToken(offerId);
+        setVisibility(false);
     }
 
     private void initComponents() {
@@ -90,9 +98,21 @@ public class BuyActivity extends AppCompatActivity {
         btn_pay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                makePayment(currentModel);
+                makePayment(currentOffer);
             }
         });
+        container_progressBar = (LinearLayout) findViewById(R.id.container_progress_bar_buy);
+        container_rest = (ScrollView) findViewById(R.id.container_data_offer);
+    }
+
+    private void setVisibility(boolean visibility){
+        if(visibility == true){
+            container_progressBar.setVisibility(View.GONE);
+            container_rest.setVisibility(View.VISIBLE);
+        }else {
+            container_progressBar.setVisibility(View.VISIBLE);
+            container_rest.setVisibility(View.GONE);
+        }
     }
 
     private void initOrderManager() {
@@ -170,29 +190,30 @@ public class BuyActivity extends AppCompatActivity {
         TransactionAsync transactionAsync = new TransactionAsync(new IResultAsync() {
             @Override
             public void send(ResultAsyncModel result) {
+
                 Toast.makeText(context, "Transação salva com sucesso", Toast.LENGTH_LONG).show();
             }
         });
 
-        TransactionModel model = new TransactionModel();
-        model.setAmount(currentOrder.getPaidAmount());
-        List<Seller> sellers = new ArrayList<Seller>();
-        sellers.add(new Seller(1));
-        sellers.add(new Seller(2));
-        model.setSellers(sellers);
-        model.setOrder(currentOrder);
+        TransactionModel model = new TransactionModel()
+                .withAmount(currentOrder.getPaidAmount())
+                .withOrder(currentOrder)
+                .withOffer(currentOffer)
+                .withSellers(new ArrayList<Seller>() {{
+                    new Seller(3);
+                    new Seller(4);
+                }});
 
         transactionAsync.execute(model);
-
         Toast.makeText(context, "Pagamento realizado com sucesso", Toast.LENGTH_LONG).show();
         finish();
     }
 
-    private int getOfferId(String message){
+    private int getOfferId(String message) {
         String[] splited = message.split("/");
-        try{
+        try {
             return Integer.parseInt(splited[splited.length - 1]);
-        }catch (Exception ex){
+        } catch (Exception ex) {
 
         }
         return -1;
